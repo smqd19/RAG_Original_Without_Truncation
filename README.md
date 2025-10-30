@@ -145,8 +145,3 @@ uv sync
 uv pip install langchain-experimental langchain-classic langchain-community
 ```
 
----
-
-**Author:** Your Name  
-**Project:** InsureLLM RAG Challenge  
-**Result:** 🏆 Achieved 0.9058 MRR — a 36% improvement over baseline
