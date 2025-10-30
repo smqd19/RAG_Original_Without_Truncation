@@ -128,11 +128,11 @@ def fetch_context(question: str) -> list:
 
 ### Retrieval Evaluation
 
-![Retrieval Evaluation](assests/1_after_encoder.png)
+![Retrieval Evaluation](assests/1_after_encoder.PNG)
 
 ### Answer Evaluation
 
-![Answer Evaluation](assests/2_after_encoder.png)
+![Answer Evaluation](assests/2_after_encoder.PNG)
 
 ---
 
