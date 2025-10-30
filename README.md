@@ -1,36 +1,25 @@
-# 🧠 InsureLLM RAG Challenge: A Data-Driven Optimization
+# InsureLLM RAG Challenge: A Data-Driven Optimization
 
 This document outlines the architecture of the final, high-performance **RAG (Retrieval-Augmented Generation)** pipeline.  
 This design was the result of a systematic, data-driven approach, where each component was chosen to address specific failures identified in a formal evaluation process.
 
-Our final solution — which **achieved a 90.6% MRR** — is a two-stage system combining **Semantic Chunking** with a **Bi-Encoder / Cross-Encoder Retrieval Pipeline**.
+My final solution is a two-stage system combining **Semantic Chunking** with a **Bi-Encoder / Cross-Encoder Retrieval Pipeline**.
 
 ---
 
-## 🧩 The Problem: Baseline RAG Failures
+## The Problem: Baseline RAG Failures
 
 The initial, "naive" RAG pipeline (using `RecursiveCharacterTextSplitter` and simple vector search) produced mediocre results.
 
-**Baseline Evaluation (Turn 13 Data):**
-
-- **Mean Reciprocal Rank (MRR):** 0.7228  
-- **Answer Accuracy:** 4.12 / 5  
-- **Completeness:** 3.56 / 5 (Red)
-
-The bar charts revealed the core issue: the system failed on complex queries.
-
-- **Retrieval Failure:** "Relationship" queries had a low **0.54 MRR**.  
-- **Answer Failure:** "Holistic" queries had a failing **2.6 / 5 Accuracy**.
-
-This showed the baseline pipeline was:
+The baseline pipeline was:
 1. Fragmenting coherent information during indexing.  
 2. Failing to retrieve the right information for complex questions.
 
 ---
 
-## ⚙️ Phase 1: Fixing the Foundation (Semantic Chunking)
+## Phase 1: Fixing the Foundation (Semantic Chunking)
 
-Our first intervention was to fix the indexing by replacing the arbitrary `RecursiveCharacterTextSplitter` with **SemanticChunker**.
+My first intervention was to fix the indexing by replacing the arbitrary `RecursiveCharacterTextSplitter` with **SemanticChunker**.
 
 - **Technique:** Semantic Chunking groups sentences by topic and meaning — not character count.  
   This creates *semantically coherent* chunks, ensuring that complete ideas are kept together.  
@@ -44,9 +33,9 @@ The bi-encoder (`all-MiniLM-L6-v2`) lacked precision in ranking these richer sem
 
 ---
 
-## 🚀 Phase 2: The Solution (Two-Stage Retrieval)
+## Phase 2: The Solution (Two-Stage Retrieval)
 
-To solve the 0.6667 MRR problem, we implemented a **two-stage retrieval pipeline**.  
+To solve the 0.6667 MRR problem, I implemented a **two-stage retrieval pipeline**.  
 This architecture balances **speed (Stage 1)** with **accuracy (Stage 2)**.
 
 ### **Stage 1: Bi-Encoder (Fast Recall)**
@@ -68,7 +57,7 @@ It provides the fine-grained relevance scoring that bi-encoders lack — directl
 
 ---
 
-## 📊 Final Results (Turn 22 Evaluation Data)
+## Final Results (Evaluation Data)
 
 Implementing the two-stage system produced dramatic improvements:
 
@@ -76,15 +65,15 @@ Implementing the two-stage system produced dramatic improvements:
 |---------|----------|-------|
 | **MRR** | 0.6667 | **0.9058** |
 | **nDCG** | 0.6873 | **0.9049** |
-| **Answer Accuracy** | 3.81 → **4.42 / 5** |
+| **Answer Accuracy** | 3.81 | **4.42** |
 
 The cross-encoder re-ranker was the decisive factor in restoring precision and improving overall retrieval performance.
 
 ---
 
-## 🏗️ Final Architecture
+## Final Architecture
 
-### **1️⃣ `ingest.py` (Semantic Chunking)**
+### **`ingest.py` (Semantic Chunking)**
 
 The `RecursiveCharacterTextSplitter` was replaced with `SemanticChunker`.
 
@@ -102,7 +91,7 @@ def create_chunks(documents):
 
 ---
 
-### **2️⃣ `answer.py` (Two-Stage Retrieval)**
+### **`answer.py` (Two-Stage Retrieval)**
 
 The retriever was replaced with a `ContextualCompressionRetriever` combining the bi-encoder and cross-encoder.
 
@@ -135,36 +124,26 @@ def fetch_context(question: str) -> list:
 
 ---
 
-## 🖼️ Visual Results
+## Results
 
-*(Add your result images below — replace the placeholders with actual image paths.)*
+### Retrieval Evaluation
 
-### 📈 Overall Performance Comparison
+![Retrieval Evaluation](/assests/1_after_encoder.png)
 
-![Overall Performance Placeholder](images/performance_results.png)
+### Answer Evaluation
 
-### 🧩 Two-Stage Architecture Diagram
-
-![Architecture Diagram Placeholder](images/architecture_diagram.png)
+![Answer Evaluation](/assests/2_after_encoder.png)
 
 ---
 
-## 🧰 Installation
+## Installation
 
 Please ensure the following packages are installed before running the pipeline:
 
 ```bash
+uv sync
 uv pip install langchain-experimental langchain-classic langchain-community
 ```
-
----
-
-## 📚 References
-
-1. LangChain Experimental – [SemanticChunker Documentation](https://python.langchain.com/docs/modules/data_connection/document_transformers/semantic_chunker)
-2. HuggingFace Embeddings – [MiniLM Models](https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2)
-3. BAAI Cross Encoder – [bge-reranker-base](https://huggingface.co/BAAI/bge-reranker-base)
-4. Microsoft Research – *Dual Encoder vs. Cross Encoder in Dense Retrieval*
 
 ---
 
